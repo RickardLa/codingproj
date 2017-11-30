@@ -6,6 +6,8 @@ c1 = zeros(1,length(bits));
 c2 = zeros(1,length(bits));
 
 switch flag
+    case 0              % Uncoded
+        code = bits;
     case 1              % G(D) = [1+D^2 1+D+D^2]
         for i=1:length(bits)
             c1(i) = mod(bits(i) + state2,2);
@@ -21,6 +23,7 @@ switch flag
         
     case 4
         
+          
 end
 
 
