@@ -32,37 +32,35 @@ for i = 1:N/2
         s3 = 1;
         p4 = hDist(2) + pathMetric(3,1);                % Reaching state 11
         s4 = 3;
-        pathMetric = [p1; p2; p3; p4];                  % Update path
-        survivor(:,i) = [s1; s2; s3; s4];               % Place survivors in the i:th column
+        
+        pathMetric = [p1 p2 p3 p4]';                    % Update path
+        survivor(:,i) = [s1 s2 s3 s4]';                 % Place survivors in the i:th column
         
     else                                                % On the third iteration and onwards we start terminating paths. Each state can be reached by 2 paths. 
+        
         p1 = hDist(1) + pathMetric(1,1);                % Reaching state 00
         p2 = hDist(4) + pathMetric(2,1); 
-        [pathMetric(1,1),index] = min([p1,p2]);                   % Terminate the longest path
-        s1 = index;
+        pathMetric(1,1) = min(p1,p2);                   % Terminate the longest path
+        
         
         p1 = hDist(3) + pathMetric(3,1);                % Reaching state 01
         p2 = hDist(2) + pathMetric(4,1); 
-        [pathMetric(2,1),index] = min([p1,p2]); 
-        s2 = index + 2; 
+        pathMetric(2,1) = min(p1,p2); 
+        
         
         p1 = hDist(1) + pathMetric(2,1);                % Reaching state 10
         p2 = hDist(4) + pathMetric(1,1); 
-        [pathMetric(3,1),index] = min([p1,p2]); 
-        s3 = index; 
+        pathMetric(3,1) = min(p1,p2); 
+        
         
         p1 = hDist(3) + pathMetric(4,1);                % Reaching state 11
         p2 = hDist(2) + pathMetric(3,1); 
-        [pathMetric(4,1),index] = min([p1,p2]);
-        s4 = index + 2; 
-        
-        survivor(:,i) = [s1; s2; s3; s4];  
+        pathMetric(4,1) = min(p1,p2);
         
         
+%         survivor(:,i) = [s1 s2 s3 s4]';  
         
-        
-        
-        
+
 
         
     end
