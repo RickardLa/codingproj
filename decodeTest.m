@@ -5,14 +5,18 @@ clear all
 close all
 
 states = [0 0; 0 1; 1 0; 1 1];
-N = 1e2;
+N = 50;
 codeType = 1;
 bits = randi([0 1],N,1);
 code = encode(bits,codeType);
 
-% branchMetric = zeros(1,4);
+% decodedBits = zeros(N,1);
 pathMetric = zeros(4,1);
 survivor = zeros(4,N/2);
+ipLUT = [ 0   0   0   0;...
+    0   0   0   0;...
+    1   1   0   0;...
+    0   0   1   1 ];
 for i = 1:N/2
     % Start by calculating the hamming distance between 2 coded bits and
     % the states.
@@ -26,42 +30,46 @@ for i = 1:N/2
         
         p1 = hDist(1) + pathMetric(1,1);                % Reaching state 00
         s1 = 1;
-        p2 = hDist(3) + pathMetric(3,1);                % Reaching state 01
+        p2 = hDist(2) + pathMetric(3,1);                % Reaching state 01
         s2 = 3;
         p3 = hDist(4) + pathMetric(1,1);                % Reaching state 10
         s3 = 1;
-        p4 = hDist(2) + pathMetric(3,1);                % Reaching state 11
+        p4 = hDist(3) + pathMetric(3,1);                % Reaching state 11
         s4 = 3;
         
         pathMetric = [p1 p2 p3 p4]';                    % Update path
         survivor(:,i) = [s1 s2 s3 s4]';                 % Place survivors in the i:th column
         
-    else                                                % On the third iteration and onwards we start terminating paths. Each state can be reached by 2 paths. 
+    else                                                % On the third iteration and onwards we start terminating paths. Each state can be reached by 2 paths.
         
         p1 = hDist(1) + pathMetric(1,1);                % Reaching state 00
-        p2 = hDist(4) + pathMetric(2,1); 
-        pathMetric(1,1) = min(p1,p2);                   % Terminate the longest path
+        p2 = hDist(4) + pathMetric(2,1);
+        [pathMetric(1,1), s1] = min([p1 p2]);                   % Terminate the longest path
+        % Survivor = 1 or 2
         
         
-        p1 = hDist(3) + pathMetric(3,1);                % Reaching state 01
-        p2 = hDist(2) + pathMetric(4,1); 
-        pathMetric(2,1) = min(p1,p2); 
+        p1 = hDist(2) + pathMetric(3,1);                % Reaching state 01
+        p2 = hDist(3) + pathMetric(4,1);
+        [pathMetric(2,1), s2] = min([p1 p2]);
+        % Survivor 3 or 4
+        
+        % Reaching state 10
+        p1 = hDist(4) + pathMetric(1,1);
+        p2 = hDist(1) + pathMetric(2,1);
+        [pathMetric(3,1), s3] = min([p1 p2]);
+        % Survivor 1 or 2
         
         
-        p1 = hDist(1) + pathMetric(2,1);                % Reaching state 10
-        p2 = hDist(4) + pathMetric(1,1); 
-        pathMetric(3,1) = min(p1,p2); 
+        p1 = hDist(3) + pathMetric(3,1);
+        p2 = hDist(2) + pathMetric(4,1);                % Reaching state 11
+        [pathMetric(4,1), s4] = min([p1 p2]);
+        % Survivor 3 or 4
         
         
-        p1 = hDist(3) + pathMetric(4,1);                % Reaching state 11
-        p2 = hDist(2) + pathMetric(3,1); 
-        pathMetric(4,1) = min(p1,p2);
+        survivor(:,i) = [s1 (s2+2) s3 (s4+2)]';
         
         
-%         survivor(:,i) = [s1 s2 s3 s4]';  
         
-
-
         
     end
     
@@ -70,4 +78,24 @@ for i = 1:N/2
     
     
     
+    
 end
+survivor;
+[~,currentState] = min(pathMetric);     % Last state in survivor-matrix. We loop from end to beginning.
+
+for i=N/2:-1:1
+    
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
