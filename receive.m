@@ -14,4 +14,5 @@ end
 recBits = de2bi(noiseSymb-1,2, 'left-msb');
 recBits = [recBits(:,1); recBits(:,2)];
 
+
 end

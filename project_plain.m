@@ -16,7 +16,7 @@ EsN0 = EbN0 + 10*log10(2);
 SNRlin = 10.^(EsN0/10);
 
 constellation = 'QPSK'; % Pick which constellation to use.
-codeType = 0;        % Pick which convolutional encoder to use. See encoder.m
+codeType = 1;        % Pick which convolutional encoder to use. See encoder.m
 receiverType = 'Hard';  % Pick which receiver type to use. Hard or soft. 
 
 
@@ -37,11 +37,11 @@ for i = 1:length(EbN0) % use parfor ('help parfor') to parallelize
       code = encode(bits,codeType);
       
       % [MOD] symbol mapper
-      symbols = bi2sy(bits,constellation);
+      symbols = bi2sy(code,constellation);
       
       % [CHA] add Gaussian noise
       sigma = 1/(sqrt(2*SNRlin(i)));
-      noise = sigma*(randn(1,N/2) + 1i*randn(1,N/2));
+      noise = sigma*(randn(1,N) + 1i*randn(1,N));
       noiseSymb = symbols + noise;
 
       % [HR] Hard Receiver
@@ -52,6 +52,7 @@ for i = 1:length(EbN0) % use parfor ('help parfor') to parallelize
       
       % Calculate errors
       BitErrs = sum(bits ~= decodedBits); 
+      
       totErr = totErr + BitErrs;
       num = num + N;
       

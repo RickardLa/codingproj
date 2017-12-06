@@ -5,13 +5,14 @@ clear all
 close all
 
 states = [0 0; 0 1; 1 0; 1 1];
-N = 100;
+N = 200;
 codeType = 1;
 bits = randi([0 1],N,1);
 code = encode(bits,codeType);
 decodedBits = zeros(1,N); 
 
 pathMetric = zeros(4,1);
+pathMetric2 = zeros(4,1); 
 survivor = zeros(4,N/2);
 for i = 1:N
     % Start by calculating the hamming distance between 2 coded bits and
@@ -40,34 +41,36 @@ for i = 1:N
         
         p1 = hDist(1) + pathMetric(1,1);                % Reaching state 00
         p2 = hDist(4) + pathMetric(2,1); 
-        [pathMetric(1,1), s1] = min([p1 p2]);                   % Terminate the longest path
+        [path1, s1] = min([p1 p2]);                   % Terminate the longest path
         % Survivor = 1 or 2
         
         
-        p1 = hDist(2) + pathMetric(3,1);                % Reaching state 01
-        p2 = hDist(3) + pathMetric(4,1); 
-        [pathMetric(2,1), s2] = min([p1 p2]); 
+        p1 = hDist(2) + pathMetric(3);                % Reaching state 01
+        p2 = hDist(3) + pathMetric(4); 
+        [path2, s2] = min([p1 p2]); 
         % Survivor 3 or 4
         
                                                         % Reaching state 10
-        p1 = hDist(4) + pathMetric(1,1); 
-        p2 = hDist(1) + pathMetric(2,1);
-        [pathMetric(3,1), s3] = min([p1 p2]);
+        p1 = hDist(4) + pathMetric(1); 
+        p2 = hDist(1) + pathMetric(2);
+        [path3, s3] = min([p1 p2]);
         % Survivor 1 or 2
         
         
-        p1 = hDist(3) + pathMetric(3,1);
-        p2 = hDist(2) + pathMetric(4,1);                % Reaching state 11
-        [pathMetric(4,1), s4] = min([p1 p2]);
+        p1 = hDist(3) + pathMetric(3);
+        p2 = hDist(2) + pathMetric(4);                % Reaching state 11
+        [path4, s4] = min([p1 p2]);
         % Survivor 3 or 4
         
         
         survivor(:,i) = [s1 (s2+2) s3 (s4+2)]';  
         
+        pathMetric = [path1 path2 path3 path4]';
         
 
         
     end
+    
     
     % The survivor-matrix is completed. Time to back-trace and decode. We
     % assume it ends at the all zero state. 
@@ -81,9 +84,10 @@ for i = 1:N
 end
 
 [~,currentState] = min(pathMetric);     % Last state in survivor-matrix. We loop from end to beginning.
+
+currentState = double(currentState); 
 for i=N:-1:1
-    previousState = survivor(currentState,i);
-    
+   
     if currentState == 1 || currentState == 2
         decodedBits(i) = 0;
     else
@@ -91,13 +95,10 @@ for i=N:-1:1
     end
     
     
-   
+    previousState = survivor(currentState,i);
     currentState = previousState; 
    
 end
 
-errors = sum(decodedBits'~=bits)/N
-% [decodedBits' bits]
-% decodedBits';
-pathMetric
+
 
