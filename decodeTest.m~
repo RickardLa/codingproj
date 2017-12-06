@@ -5,11 +5,11 @@ clear all
 close all
 
 states = [0 0; 0 1; 1 0; 1 1];
-N = 100;
+N = 6;
 codeType = 1;
 bits = randi([0 1],N,1);
 code = encode(bits,codeType);
-decodedBits = zeros(1,N); 
+
 
 pathMetric = zeros(4,1);
 survivor = zeros(4,N/2);

@@ -10,8 +10,8 @@ switch flag
         code = bits;
     case 1              % G(D) = [1+D^2 1+D+D^2]
         for i=1:length(bits)
-            c1(i) = mod(bits(i) + state2,2);
-            c2(i) = mod(bits(i) + state1 + state2,2);
+            c1(i) = mod(bits(i) + state2, 2);
+            c2(i) = mod(bits(i) + state1 + state2, 2);
             state2 = state1;
             state1 = bits(i);
         end
