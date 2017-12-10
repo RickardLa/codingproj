@@ -11,12 +11,13 @@ clear
 N = 1e5;                % simulate N bits each transmission (one block)
 maxNumErrs = 100;       % get at least 100 bit errors (more is better)
 maxNum = 1e7;           % OR stop if maxNum bits have been simulated
-EbN0 = -1:0.5:12;       % power efficiency range
-EsN0 = EbN0 + 10*log10(2);
+
+Rc = 1/2; 
+EbN0 = -1:0.5:2;                % power efficiency range
+EsN0 = EbN0 + 10*log10(Rc*2);   % Code-rate multiplied by bits per symbol to get correct EbN0
 SNRlin = 10.^(EsN0/10);
 
 constellation = 'QPSK'; % Pick which constellation to use.
-codeType = 1;        % Pick which convolutional encoder to use. See encoder.m
 receiverType = 'Hard';  % Pick which receiver type to use. Hard or soft. 
 
 
@@ -34,7 +35,7 @@ for i = 1:length(EbN0) % use parfor ('help parfor') to parallelize
       bits = randi([0 1],N,1);
       
       % [ENC] convolutional encoder 
-      code = encode(bits,codeType);
+      code = encode(bits);
       
       % [MOD] symbol mapper
       symbols = bi2sy(code,constellation);
@@ -48,7 +49,7 @@ for i = 1:length(EbN0) % use parfor ('help parfor') to parallelize
       recBits = receive(noiseSymb,receiverType);
 
       % [DEC] Hard-Input Viterbi
-      decodedBits = decode(recBits,codeType);
+      decodedBits = decode(recBits);
       
       % Calculate errors
       BitErrs = sum(bits ~= decodedBits); 
@@ -56,11 +57,6 @@ for i = 1:length(EbN0) % use parfor ('help parfor') to parallelize
       totErr = totErr + BitErrs;
       num = num + N;
       
-      
-      
-      
-      
-
 %       disp(['+++ ' num2str(totErr) '/' num2str(maxNumErrs) ' errors. '...
 %           num2str(num) '/' num2str(maxNum) ' bits. Projected error rate = '...
 %           num2str(totErr/num, '%10.1e') '. +++']);
