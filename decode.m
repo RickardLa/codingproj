@@ -1,3 +1,5 @@
+% Decoding with manually implemented Viterbi. 
+
 function decodedBits = decode(bits)
 
 N= length(bits);
