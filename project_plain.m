@@ -18,12 +18,13 @@ EsN0 = EbN0 + 10*log10(Rc*2);   % Code-rate multiplied by bits per symbol to get
 SNRlin = 10.^(EsN0/10);
 
 
-decision = 'Hard';                  % Pick which receiver type to use. Hard or soft.
+decision = 'Soft';                  % Pick which receiver type to use. Hard or soft.
 M = 4;                              % Modulation order
 
 % Encoders
-% trellis = poly2trellis(3,[5 7]);    % 1
-trellis = poly2trellis(5,[23 11]);    % 2
+% trellis = poly2trellis(3,[5 7]);    % 1. d_min = 5
+% trellis = poly2trellis(5,[23 11]);  % 2. d_min = 5 
+trellis = poly2trellis(5,[23 33]);  % 3. d_min = 7
 
 
 
